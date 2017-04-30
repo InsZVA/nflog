@@ -7,7 +7,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	"io"
+	"os"
 	"syscall"
 )
 
@@ -233,13 +233,13 @@ func (n *NFLog) parseNFPacket(buffer []byte) error {
 			var t uint16
 			binary.Read(reader, binary.BigEndian, &t)
 			m.MacLayerType = &t
-			reader.Seek(2, io.SeekCurrent) // Padding
+			reader.Seek(2, os.SEEK_CUR) // Padding
 		case NFULA_HWHEADER:
 			payload := make([]byte, align4_16(payloadLen))
 			reader.Read(payload)
 			m.MacLayer = payload[:payloadLen]
 		default:
-			reader.Seek(int64(align4_16(payloadLen)), io.SeekCurrent)
+			reader.Seek(int64(align4_16(payloadLen)), os.SEEK_CUR)
 		}
 	}
 
